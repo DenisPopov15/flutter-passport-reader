@@ -1,56 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:dmrtd/dmrtd.dart';
+import 'dart:convert';
 
 void beginToScan() async {
-   // this function begin to scanning and prints scan results
-   final nfc = NfcProvider(); // initializing nfc scanner
-   try {
-   // beginning to scan
-   await nfc.connect(iosAlertMessage: "Hold your iPhone near Passport");
-   final passport = Passport(nfc);
-   // setting message for ios. Not required for android
-   nfc.setIosAlertMessage("Reading EF.CardAccess…");
-   // final cardAccess = await passport.readEfCardAccess();
-   nfc.setIosAlertMessage("Initiating session…");
-   // running scan function
+  // this function begin to scanning and prints scan results
+  final nfc = NfcProvider(); // initializing nfc scanner
+  try {
+  // beginning to scan
+  await nfc.connect(iosAlertMessage: "Hold your iPhone near Passport");
+  final passport = Passport(nfc);
+  // setting message for ios. Not required for android
+  nfc.setIosAlertMessage("Reading EF.CardAccess…");
+  // final cardAccess = await passport.readEfCardAccess();
+  nfc.setIosAlertMessage("Initiating session…");
+  // running scan function
 
-   // !!!!!!!!NOTE!!!!!!!: put here your passport number, DOB and passport expiration (its required to read chip data)
-   final bacKeySeed = DBAKey(
-   "AB3232233", // change this to user passport's serial number
-   DateTime(1998, DateTime.august, 17), // change this to birth date
-   DateTime(2027, DateTime.april, 21)); // change this to passport's validate date
-   // starting session
-   await passport.startSession(bacKeySeed);
-   nfc.setIosAlertMessage("Reading EF.COM…");
-   // reading EFCOM
-   final efcom = await passport.readEfCOM();
-   nfc.setIosAlertMessage("Reading Data Groups…");
-   EfDG1? dg1;
-   // reading EfDG1
-   if (efcom.dgTags.contains(EfDG1.TAG)) {
-   dg1 = await passport.readEfDG1();
-   }
-   EfDG2? dg2;
-   // reading EfDG2
-   if (efcom.dgTags.contains(EfDG2.TAG)) {
-   dg2 = await passport.readEfDG2();
-   }
-   // You can read other data groups similarly
-   nfc.setIosAlertMessage("Reading EF.SOD…");
-   final sod = await passport.readEfSOD();
-   // You can print or display the data groups as you wish
-   print("data-1: ${dg1?.mrz.country}");
-   print("data-2: ${dg1?.mrz.dateOfBirth}");
-   print("data-3: ${dg1?.mrz.documentNumber}");
-   print("data-4: ${dg1?.mrz.firstName}");
-   print("data-5: ${dg1?.mrz.optionalData}");
-   } catch (e) {
-   print("$e");
-   // Handle errors
-   } finally {
-     // disconnection NFC at the end
-     await nfc.disconnect();
-   }
+  // !!!!!!!!NOTE!!!!!!!: put here your passport number, DOB and passport expiration (its required to read chip data)
+  final bacKeySeed = DBAKey(
+  "AB3232233", // change this to user passport's serial number
+  DateTime(1998, DateTime.august, 17), // change this to birth date
+  DateTime(2037, DateTime.april, 21)); // change this to passport's validate date  // starting session
+  await passport.startSession(bacKeySeed);
+  nfc.setIosAlertMessage("Reading EF.COM…");
+  // reading EFCOM
+  final efcom = await passport.readEfCOM();
+  nfc.setIosAlertMessage("Reading Data Groups…");
+  EfDG1? dg1;
+  // reading EfDG1
+  if (efcom.dgTags.contains(EfDG1.TAG)) {
+    dg1 = await passport.readEfDG1();
+  }
+  EfDG2? dg2;
+  // reading EfDG2
+  if (efcom.dgTags.contains(EfDG2.TAG)) {
+    dg2 = await passport.readEfDG2();
+  }
+  // EfDG15? dg15;
+  // // reading EfDG2
+  // if (efcom.dgTags.contains(EfDG15.TAG)) {
+  //   dg15 = await passport.readEfDG15();
+  // }
+  // You can read other data groups similarly
+  nfc.setIosAlertMessage("Reading EF.SOD…");
+  final sod = await passport.readEfSOD();
+  // You can print or display the data groups as you wish
+  print("data-1: ${dg1?.mrz.country}");
+  print("data-2: ${dg1?.mrz.dateOfBirth}");
+  print("data-3: ${dg1?.mrz.documentNumber}");
+  print("data-4: ${dg1?.mrz.firstName}");
+  print("data-5: ${dg1?.mrz.optionalData}");
+  print("dg1: ${base64Encode(dg1!.toBytes())}");
+  // print("dg15: ${base64Encode(dg15!.toBytes())}");
+  print("sod: ${base64Encode(sod.toBytes())}");
+  } catch (e) {
+    print("$e");
+  // Handle errors
+  } finally {
+    // disconnection NFC at the end
+    await nfc.disconnect();
+  }
  }
 
 void main() {
