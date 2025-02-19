@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:dmrtd/dmrtd.dart';
 import 'dart:convert';
+import 'package:convert/convert.dart';
+import 'dart:developer';
 
 void beginToScan() async {
   // this function begin to scanning and prints scan results
@@ -20,6 +22,7 @@ void beginToScan() async {
   "AB3232233", // change this to user passport's serial number
   DateTime(1998, DateTime.august, 17), // change this to birth date
   DateTime(2037, DateTime.april, 21)); // change this to passport's validate date  // starting session
+  // starting session
   await passport.startSession(bacKeySeed);
   nfc.setIosAlertMessage("Reading EF.COM…");
   // reading EFCOM
@@ -51,7 +54,7 @@ void beginToScan() async {
   print("data-5: ${dg1?.mrz.optionalData}");
   print("dg1: ${base64Encode(dg1!.toBytes())}");
   // print("dg15: ${base64Encode(dg15!.toBytes())}");
-  print("sod: ${base64Encode(sod.toBytes())}");
+  log("sod: ${base64Encode(sod.toBytes())}");
   } catch (e) {
     print("$e");
   // Handle errors
